@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
+<style>
+
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
+
+</style>
+<body>
+<script>
+
+// get the data
+d3.csv("network.csv", function(error, links) {
+
+    var nodes = {};
+
+    // Given the links in the file, we need to keep a set of distinct nodes so they can be drawn
+    links.forEach(function(link) {
+        // This notation means that if we have a node at the index given, use it; otherwise
+        // add it to the node list as a new node. The group value helps color counties and 
+        // utilities differently
+        link.source = nodes[link.source] || 
+            (nodes[link.source] = {name: link.source, group: 0});
+        link.target = nodes[link.target] || 
+            (nodes[link.target] = {name: link.target, group: 1});
+        link.value = +link.value;
+    });
+
+    // Dimensions of the plot
+    var width = 3000, height = 2000;
+
+    // Create a color pallete to use for coloring nodes
+    var color = d3.scale.category10();
+
+    // Crete force directed layout
+    var force = d3.layout.force()
+        .nodes(d3.values(nodes))
+        .links(links)
+        .size([width, height])
+        .linkDistance(60)
+        .charge(-300)
+        .on("tick", tick)
+        .start();
+
+    // Start creating the svg object
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // build the arrow.
+    svg.append("svg:defs").selectAll("marker")
+        .data(["end"])      // Different link/path types can be defined here
+      .enter().append("svg:marker")    // This section adds in the arrows
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 15)
+        .attr("refY", -1.5)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+      .append("svg:path")
+        .attr("d", "M0,-5L10,0L0,5");
+
+    // add the links and the arrows
+    var path = svg.append("svg:g").selectAll("path")
+        .data(force.links())
+      .enter().append("svg:path")
+    //    .attr("class", function(d) { return "link " + d.type; })
+        .attr("class", "link")
+        // TODO: try to set the link width to reflect importances
+        //.style("stroke-width", function(d) { return color(d.value); })
+        .attr("marker-end", "url(#end)");
+
+    // Define the nodes from our nodes list
+    var node = svg.selectAll(".node")
+        .data(force.nodes())
+      .enter().append("g")
+        .attr("class", "node")
+        // USe the css fill based on the nodes group value
+        .style("fill", function(d) { return color(d.group); })
+        .call(force.drag);
+
+    // Add the nodes
+    node.append("circle")
+        .attr("r", 5);
+
+    // Add the text, which are just the IDs from the file 
+    node.append("text")
+        .attr("x", 12)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.name; });
+
+    // Add the curvy lines
+    function tick() {
+        path.attr("d", function(d) {
+            var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = Math.sqrt(dx * dx + dy * dy);
+            return "M" + 
+                d.source.x + "," + 
+                d.source.y + "A" + 
+                dr + "," + dr + " 0 0,1 " + 
+                d.target.x + "," + 
+                d.target.y;
+        });
+
+        node.attr("transform", function(d) { 
+            return "translate(" + d.x + "," + d.y + ")"; });
+    }
+
+});
+
+</script>
+</body>
+</html>
