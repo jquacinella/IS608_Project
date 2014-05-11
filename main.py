@@ -158,28 +158,21 @@ def calculateCountyConsumption():
         countySum = 0
         errorCount = 0
 
-        if county == 54011:
-            print "54011's utilities: %s" % utilities
-            print countyToPopulation[county]
-            print utilityToPopulation[utility]
-            print utilityToConsumption[utility]
-            print ((countyToPopulation[county] / utilityToPopulation[utility]) * utilityToConsumption[utility])
-
         for utility in utilities:
             try:
                 countySum += ((countyToPopulation[county] / utilityToPopulation[utility]) * utilityToConsumption[utility])
             except Exception as e:
                 errorCount+=1
 
-                #print "Error for county %d and utility %d" % (county, utility)
+                print "Error for county %d and utility %d" % (county, utility)
 
         if errorCount != 0:
             countiesWithErrors+=1
-            #print "Number of errors: %d / %d" % (errorCount, len(utilities))
+            print "Number of errors: %d / %d" % (errorCount, len(utilities))
 
         countyToConsumption[county] = countySum
 
-    #print "Counties with errors: %d / %d" % (countiesWithErrors, len(countyToUtility.keys()))
+    print "Counties with errors: %d / %d" % (countiesWithErrors, len(countyToUtility.keys()))
 
 
 
@@ -259,12 +252,15 @@ def main():
     #         break;
 
 
+    # Output CSV for choropleth maps
     f = open("map.csv", "w")
     f.write("id,consumption\n")
     for county, consumption in countyToConsumption.items():
         f.write("%s,%s\n" % (county, consumption))
     f.close()
 
+    # Max consumption (so we can set the scale in html)
     print("Max: %f" % max(countyToConsumption.values()))
+
 if __name__ == "__main__":
     main()
