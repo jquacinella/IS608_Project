@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
+
+    <script type="text/javascript">
+        // Inspired by: https://google-developers.appspot.com/chart/interactive/docs/gallery/columnchart
+        google.load("visualization", "1", {packages:["corechart"]});
+
+        // Setup the onLoad callback (this is how we initialize the chart)
+        google.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            // Read in data provided by main python script using d3's CSV parser
+            d3.csv("barchart.csv", function(error, rows) {
+                // Create a list of lists, where each inner list is the utility index and consumption data pair
+                var input = [['Index', 'Consumption (in mWh)']];
+                rows.forEach(function(row) {
+                    input.push([parseInt(row['index']), parseFloat(row['consumption'])]);
+                });
+
+                // Create the Google Chart visualization data (from our input array)
+                var data = google.visualization.arrayToDataTable(input.slice(0,300));
+
+                // Some formatting options
+                var options = {
+                  title: 'Utility Production in mWh',
+                  hAxis: {title: 'Utility Index'}
+                };
+
+                // Create the chart object and draw it in the 'chart_div' div
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            });
+        }
+    </script>
+  </head>
+
+  <body>
+    <div id="chart_div" style="width: 1600px; height: 1200px;"></div>
+  </body>
+
+</html>
