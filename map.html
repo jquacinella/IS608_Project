@@ -96,8 +96,8 @@ var svg = d3.select("body #map").append("svg")
     .attr("height", height);
 
 queue()
-    .defer(d3.json, "file:///home/james/Code/Masters/IS608/Project/us.json")
-    .defer(d3.csv, "file:///home/james/Code/Masters/IS608/Project/map.csv", function(d) {
+    .defer(d3.json, "us.json")
+    .defer(d3.csv, "map.csv", function(d) {
       consumptionById.set(d.id, +d.consumption); 
     })
     .await(ready);
