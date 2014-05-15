@@ -256,7 +256,14 @@ def main():
     f = open("map.csv", "w")
     f.write("id,consumption\n")
     for county, consumption in countyToConsumption.items():
-        f.write("%s,%s\n" % (county, consumption))
+        f.write("%s,%f\n" % (county, consumption))
+    f.close()
+
+    # Output CSV for choropleth maps
+    f = open("map_norm.csv", "w")
+    f.write("id,consumption\n")
+    for county, consumption in countyToConsumption.items():
+        f.write("%s,%f\n" % (county, consumption / float(countyToPopulation[county])))
     f.close()
 
     # Max consumption (so we can set the scale in html)
