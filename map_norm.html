@@ -76,7 +76,7 @@ var width = 960,
 var consumptionById = d3.map();
 
 var quantize = d3.scale.quantize()
-    .domain([0, 2500000])
+    .domain([0, 20])
     .range(d3.range(19).map(function(i) { return "q" + i + "-19"; }));
 
 var projection = d3.geo.albersUsa()
@@ -92,7 +92,7 @@ var svg = d3.select("body #map").append("svg")
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "map.csv", function(d) {
+    .defer(d3.csv, "map_norm.csv", function(d) {
       consumptionById.set(d.id, +d.consumption); 
     })
     .await(ready);
