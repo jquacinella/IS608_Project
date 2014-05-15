@@ -31,6 +31,7 @@ STATES = { 'AK': 'Alaska','AL': 'Alabama','AR': 'Arkansas','AS': 'American Samoa
 countyToUtility = {}        # Mapping from county number to a list of utilities serving it
 utilityToCounty = {}        # Mapping from utility id to a list of counties it serves
 countyToPopulation = {}     # Mapping from county number to a population from census data
+countyNames = {}            # Mapping from the county code to proper county name
 nameToID = {}               # Mapping from county name to the county code
 utilityToConsumption = dict()   # Mapping the utility id to the total consumption in mWh
 utilityToPopulation = dict()    # Mapping the utility id to the total county population it serves
@@ -51,8 +52,13 @@ def loadCensusData():
         desc = row[DESC]
         pop2012 = row[POP2012]
 
-        # Derive the 'county key' from the description column
+        # Split the  'desc' column by commads to get the county and state name
         (county, state) = desc.split(',')
+        
+        # Store proper name in dict 
+        countyNames[id] = county
+
+        # Derive the 'county key' from the description column
         county = county.lower().replace("county", "").replace(".", "").replace(" ", "")
         state = state.lower().replace(' ', '')
         key = state + '_' + county
@@ -259,11 +265,18 @@ def main():
         f.write("%s,%f\n" % (county, consumption))
     f.close()
 
-    # Output CSV for choropleth maps
+    # Output CSV for normalized choropleth maps
     f = open("map_norm.csv", "w")
     f.write("id,consumption\n")
     for county, consumption in countyToConsumption.items():
         f.write("%s,%f\n" % (county, consumption / float(countyToPopulation[county])))
+    f.close()
+
+    # Output CSV for county to name mapping
+    f = open("counties.csv", "w")
+    f.write("id,name\n")
+    for county, name in countyNames.items():
+        f.write("%s,%s\n" % (county, name))
     f.close()
 
     # Max consumption (so we can set the scale in html)
