@@ -316,6 +316,7 @@ function ready_norm(error, us, us_cities) {
       .attr("class", "states")
       .attr("d", path_norm);
 
+  // inspired by http://www.d3noob.org/2013/03/a-simple-d3js-map-explained.html
   svg_norm.append("g")
     .attr("id", "cities2")
     .selectAll("path")
