@@ -12,7 +12,9 @@
   stroke-linejoin: round;
 }
 
-
+.city {
+  fill: #FF0000;
+}
 
 .q0-19 {fill: #DEEBF7; color: #DEEBF7 }
 .q1-19 {fill: #D2E1EE; color: #D2E1EE }
@@ -138,6 +140,7 @@ var svg = d3.select("body #map").append("svg")
 
 queue()
     .defer(d3.json, "us.json")
+    .defer(d3.json, "cities.json")
     .defer(d3.csv, "counties.csv", function(d) {
       counties[d.id] = d.name; 
     })
@@ -146,7 +149,7 @@ queue()
     })
     .await(ready);
 
-function ready(error, us) {
+function ready(error, us, us_cities) {
 
   var legend = d3.select('#legend')
                 .append('ul')
@@ -199,6 +202,30 @@ function ready(error, us) {
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
       .attr("class", "states")
       .attr("d", path);
+
+  svg.append("g")
+    .attr("id", "cities")
+    .selectAll("path")
+    .data(topojson.feature(us_cities, us_cities.objects.cities).features)
+    .enter()
+    .append("path")
+    .attr("id", function(d) { return d.properties.name; })
+    .attr("class", "city")
+    .attr("d", path.pointRadius(2))
+    //Adding mouseevents
+    .on("mouseover", function(d) {
+      d3.select(this).transition().duration(300).style("opacity", 1);
+      div.transition().duration(300)
+      .style("opacity", 1)
+      div.html("<strong>City: </strong> " + d.properties.name)
+      .style("left", (d3.event.pageX) + "px")
+      .style("top", (d3.event.pageY -30) + "px");
+    })
+    .on("mouseout", function() {
+          d3.select(this)
+          div.transition().duration(300)
+          .style("opacity", 0);
+    });
 }
 
 //d3.select(self.frameElement).style("height", height + "px");
@@ -230,6 +257,7 @@ var svg_norm = d3.select("body #map_norm").append("svg")
 
 queue()
     .defer(d3.json, "us.json")
+    .defer(d3.json, "cities.json")
     .defer(d3.csv, "counties.csv", function(d) {
       counties[d.id] = d.name; 
     })
@@ -238,7 +266,7 @@ queue()
     })
     .await(ready_norm);
 
-function ready_norm(error, us) {
+function ready_norm(error, us, us_cities) {
   var legend = d3.select('#legend_norm')
                 .append('ul')
                 .attr('class', 'list-inline');
@@ -267,7 +295,6 @@ function ready_norm(error, us) {
     .enter().append("path")
       .attr("class", function(d) { return quantize_norm(consumptionPerCapitaById.get(d.id)); })
       .attr("d", path_norm)
-
       //Adding mouseevents
       .on("mouseover", function(d) {
         consumptionPerCapitaById.get(d.id);
@@ -288,6 +315,30 @@ function ready_norm(error, us) {
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
       .attr("class", "states")
       .attr("d", path_norm);
+
+  svg_norm.append("g")
+    .attr("id", "cities2")
+    .selectAll("path")
+    .data(topojson.feature(us_cities, us_cities.objects.cities).features)
+    .enter()
+    .append("path")
+    .attr("id", function(d) { return d.properties.name + '2'; })
+    .attr("class", "city")
+    .attr("d", path.pointRadius(2))
+    //Adding mouseevents
+    .on("mouseover", function(d) {
+      d3.select(this).transition().duration(300).style("opacity", 1);
+      div.transition().duration(300)
+      .style("opacity", 1)
+      div.html("<strong>City: </strong> " + d.properties.name)
+      .style("left", (d3.event.pageX) + "px")
+      .style("top", (d3.event.pageY -30) + "px");
+    })
+    .on("mouseout", function() {
+          d3.select(this)
+          div.transition().duration(300)
+          .style("opacity", 0);
+    });
 }
 
 //d3.select(self.frameElement).style("height", height + "px");
