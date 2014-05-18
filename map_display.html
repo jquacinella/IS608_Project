@@ -90,9 +90,10 @@ div.tooltip {
 <div class="container" >
   <div>
     <h2>IS608 Final Project - James Quacinella</h2>
-    <p>Here two maps are presented. The first map is of per-county estimated energy consumption (in MWh) in the United States in 2012. The second map is the same as the first one, but normalized bu county population.</p> 
 
-    <p>To see a deeper discussion of how this was made and what data was used, please check the full <a href="http://nbviewer.ipython.org/github/jquacinella/IS608_Project/blob/master/IS608%20Project%20Final.ipynb">iPython notebook</a>. All the code
+    <p>This is the final project submission for IS608, a required course in the <a href="http://sps.cuny.edu/programs/ms_dataanalytics">Master's Degree in Data Analytics program at SPS CUNY</a>. A list of projects from my fellow classmates can be found <a href="http://jlaurito.github.io/CUNY_IS608/">here</a>.</p>
+
+    <p>Here two maps are presented. The first map is of per-county estimated energy consumption (in MWh) in the United States in 2012. The second map is the same as the first one, but normalized bu county population. To see a deeper discussion of how this was made and what data was used, please check the full <a href="http://nbviewer.ipython.org/github/jquacinella/IS608_Project/blob/master/IS608%20Project%20Final.ipynb">iPython notebook</a>. All the code
     and data is hosted on <a href="https://github.com/jquacinella/IS608_Project">Github</a>.</p>
   </div>
   <div id="legend">
@@ -316,7 +317,7 @@ function ready_norm(error, us, us_cities) {
       .attr("class", "states")
       .attr("d", path_norm);
 
-  // inspired by http://www.d3noob.org/2013/03/a-simple-d3js-map-explained.html
+  // inspired by: http://www.d3noob.org/2013/03/a-simple-d3js-map-explained.html
   svg_norm.append("g")
     .attr("id", "cities2")
     .selectAll("path")
